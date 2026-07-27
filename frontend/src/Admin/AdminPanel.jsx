@@ -13,11 +13,6 @@ const emptyForm = {
   featured: false,
 };
 
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
-
 const AdminPanel = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
