@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
 const normalizeArray = (payload) => (Array.isArray(payload) ? payload : []);
 const getAuthHeaders = () => {
@@ -10,7 +11,7 @@ const getAuthHeaders = () => {
 export const fetchProducts = createAsyncThunk(
     'products/fetchProducts',
     async () => {
-        const response = await axios.get('/api/Products', { headers: getAuthHeaders() });
+        const response = await axios.get(`${API_BASE_URL}/api/Products`, { headers: getAuthHeaders() });
         return normalizeArray(response.data);
     }
 );
@@ -18,7 +19,7 @@ export const fetchProducts = createAsyncThunk(
 export const fetchFeaturedProducts = createAsyncThunk(
     'products/fetchFeaturedProducts',
     async () => {
-        const response = await axios.get('/api/featured-products', { headers: getAuthHeaders() });
+        const response = await axios.get(`${API_BASE_URL}/api/featured-products`, { headers: getAuthHeaders() });
         return normalizeArray(response.data);
     }
 );

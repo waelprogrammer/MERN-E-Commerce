@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE_URL, getAuthHeaders } from '../config/api';
 
 const emptyForm = {
   name: '',
@@ -28,8 +29,8 @@ const AdminPanel = () => {
   const loadData = async () => {
     try {
       const [productsResponse, usersResponse] = await Promise.all([
-        axios.get('/api/admin/products', { headers: getAuthHeaders() }),
-        axios.get('/api/admin/users', { headers: getAuthHeaders() }),
+        axios.get(`${API_BASE_URL}/api/admin/products`, { headers: getAuthHeaders() }),
+        axios.get(`${API_BASE_URL}/api/admin/users`, { headers: getAuthHeaders() }),
       ]);
       setProducts(productsResponse.data || []);
       setUsers(usersResponse.data || []);
@@ -69,10 +70,10 @@ const AdminPanel = () => {
 
     try {
       if (editingId) {
-        await axios.put(`/Products/${editingId}`, payload, { headers: getAuthHeaders() });
+        await axios.put(`${API_BASE_URL}/Products/${editingId}`, payload, { headers: getAuthHeaders() });
         setMessage('Product updated successfully');
       } else {
-        await axios.post('/Products', payload, { headers: getAuthHeaders() });
+        await axios.post(`${API_BASE_URL}/Products`, payload, { headers: getAuthHeaders() });
         setMessage('Product created successfully');
       }
 
@@ -103,7 +104,7 @@ const AdminPanel = () => {
     }
 
     try {
-      await axios.delete(`/Products/${productId}`, { headers: getAuthHeaders() });
+      await axios.delete(`${API_BASE_URL}/Products/${productId}`, { headers: getAuthHeaders() });
       setMessage('Product deleted');
       await loadData();
     } catch (error) {
