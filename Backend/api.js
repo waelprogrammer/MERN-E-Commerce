@@ -1,12 +1,9 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import fs from "fs";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import multer from "multer";
 import mongoose from "mongoose";
-import path from "path";
 import Product from "./models/Product.js";
 import User from "./models/User.js";
 
@@ -26,22 +23,6 @@ const PORT = process.env.PORT || 5000;
 const SECRET_KEY = process.env.SECRET_KEY || "supersecret";
 // MongoDB connection string.
 const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/computer-store";
-
-// Folder where uploaded files are stored.
-const UPLOAD_DIR = "uploads";
-
-// Create the uploads folder if it does not already exist.
-if (!fs.existsSync(UPLOAD_DIR)) {
-    fs.mkdirSync(UPLOAD_DIR);
-}
-
-// Configure multer so uploaded files are saved to the uploads folder.
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, UPLOAD_DIR),
-    filename: (req, file, cb) => cb(null, file.originalname)
-});
-
-const upload = multer({ storage });
 
 // Connect to MongoDB so the app can read and write product data.
 mongoose.connect(MONGO_URI)
@@ -187,25 +168,6 @@ app.get("/api/admin/products", authenticateAdmin, async (req, res) => {
 app.get("/api/admin/users", authenticateAdmin, async (req, res) => {
     const users = await User.find({}, { password: 0 }).sort({ createdAt: -1 });
     res.json(users.map((user) => ({ username: user.username, role: user.role })));
-});
-
-// Upload a file to the server.
-app.post("/upload", authenticate, upload.single("file"), (req, res) => {
-    res.json({ message: "File uploaded successfully", filename: req.file.originalname });
-});
-
-// Download a previously uploaded file.
-app.get("/download/:filename", authenticate, (req, res) => {
-    const filename = req.params.filename;
-    const filePath = path.join(UPLOAD_DIR, filename);
-
-    if (fs.existsSync(filePath)) {
-        res.download(filePath);
-    } else {
-        res.status(404).json({
-            message: "File not found"
-        });
-    }
 });
 
 // Start the server and listen for requests.
