@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 const ProductDetail = () => {
     const { id } = useParams();
     const product = useSelector((state) =>
-        state.products.products.find((p) => String(p.id) === id)
+        state.products.products.find((p) => String(p._id) === id)
     );
 
     if (!product) return <p>Product not found</p>;

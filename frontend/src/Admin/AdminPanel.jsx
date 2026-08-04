@@ -81,7 +81,7 @@ const AdminPanel = () => {
   };
 
   const handleEdit = (product) => {
-    setEditingId(product.id);
+    setEditingId(product._id);
     setForm({
       name: product.name || '',
       description: product.description || '',
@@ -136,11 +136,11 @@ const AdminPanel = () => {
         <h3>All Products</h3>
         <div style={{ display: 'grid', gap: '10px' }}>
           {products.map((product) => (
-            <div key={product.id} style={{ border: '1px solid #ddd', padding: '12px' }}>
+            <div key={product._id} style={{ border: '1px solid #ddd', padding: '12px' }}>
               <strong>{product.name}</strong> - ${product.price} - Stock: {product.stock} - Featured: {product.featured ? 'Yes' : 'No'}
               <div style={{ marginTop: '8px' }}>
                 <button onClick={() => handleEdit(product)} style={{ marginRight: '8px' }}>Edit</button>
-                <button onClick={() => handleDelete(product.id)}>Delete</button>
+                <button onClick={() => handleDelete(product._id)}>Delete</button>
               </div>
             </div>
           ))}

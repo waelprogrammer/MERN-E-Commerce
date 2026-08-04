@@ -18,17 +18,6 @@ const userSchema = new mongoose.Schema(
       enum: ['user', 'admin'],
       default: 'user',
     },
-  },
-  {
-    timestamps: true,
-    toJSON: {
-      transform: (doc, ret) => {
-        ret.id = String(ret._id);
-        delete ret._id;
-        delete ret.__v;
-        return ret;
-      },
-    },
   }
 );
 

@@ -18,11 +18,11 @@ app.use(cors());
 app.use(express.json());
 
 // Use port 5000 unless another port is provided in the environment.
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5002;
 // Secret key for JWT authentication.
-const SECRET_KEY = process.env.SECRET_KEY || "supersecret";
+const SECRET_KEY = process.env.SECRET_KEY;
 // MongoDB connection string.
-const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/computer-store";
+const MONGO_URI = process.env.MONGO_URI;
 
 // Connect to MongoDB so the app can read and write product data.
 mongoose.connect(MONGO_URI)
@@ -66,6 +66,11 @@ app.post("/register", async (req, res) => {
 app.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
+    // Without this check, a missing username would crash on .toLowerCase() below.
+    if (!username || !password) {
+        return res.status(400).json({ message: "Username and password are required" });
+    }
+
     const user = await User.findOne({ username: username.toLowerCase() });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -74,8 +79,7 @@ app.post("/login", async (req, res) => {
 
     const token = jwt.sign(
         { username: user.username, role: user.role },
-        SECRET_KEY,
-        { expiresIn: "1h" }
+        SECRET_KEY
     );
 
     res.json({ token, user: { username: user.username, role: user.role } });
@@ -105,15 +109,9 @@ const authenticateAdmin = (req, res, next) => {
     });
 };
 
-// Get all active products from MongoDB.
-app.get("/Products", async (req, res) => {
-    const products = await Product.find({ active: true }).sort({ createdAt: -1 });
-    res.json(products);
-});
-
 // Get all active products for the frontend API route.
 app.get("/api/Products", async (req, res) => {
-    const products = await Product.find({ active: true }).sort({ createdAt: -1 });
+    const products = await Product.find({ active: true });
     res.json(products);
 });
 
@@ -131,28 +129,27 @@ app.get("/api/Products/:id", authenticate, async (req, res) => {
 });
 
 // Create a new product in MongoDB.
-app.post("/Products", authenticate, async (req, res) => {
-    const newProduct = new Product(req.body);
-    await newProduct.save();
+app.post("/Products", authenticateAdmin, async (req, res) => {
+    const newProduct = await Product.create(req.body);
     res.json(newProduct);
 });
 
 // Update a product by id.
-app.put("/Products/:id", authenticate, async (req, res) => {
+app.put("/Products/:id", authenticateAdmin, async (req, res) => {
     const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updated) return res.status(404).json({ message: "Product not found" });
     res.json(updated);
 });
 
 // Deactivate a product instead of deleting it.
-app.patch("/Products/:id/deactivate", authenticate, async (req, res) => {
+app.patch("/Products/:id/deactivate", authenticateAdmin, async (req, res) => {
     const updated = await Product.findByIdAndUpdate(req.params.id, { active: false }, { new: true });
     if (!updated) return res.status(404).json({ message: "Product not found" });
     res.json(updated);
 });
 
 // Delete a product from MongoDB.
-app.delete("/Products/:id", authenticate, async (req, res) => {
+app.delete("/Products/:id", authenticateAdmin, async (req, res) => {
     const deleted = await Product.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ message: "Product not found" });
     res.json({ message: "Product deleted" });
@@ -160,13 +157,13 @@ app.delete("/Products/:id", authenticate, async (req, res) => {
 
 // Admin route to get all products for management.
 app.get("/api/admin/products", authenticateAdmin, async (req, res) => {
-    const products = await Product.find().sort({ createdAt: -1 });
+    const products = await Product.find();
     res.json(products);
 });
 
 // Admin route to get all registered usernames.
 app.get("/api/admin/users", authenticateAdmin, async (req, res) => {
-    const users = await User.find({}, { password: 0 }).sort({ createdAt: -1 });
+    const users = await User.find({}, { password: 0 });
     res.json(users.map((user) => ({ username: user.username, role: user.role })));
 });
 

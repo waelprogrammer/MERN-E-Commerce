@@ -6,7 +6,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // MongoDB connection string for the sample database.
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/computer-store';
+const MONGO_URI = process.env.MONGO_URI;
 
 // Create sample products that will be inserted into MongoDB.
 const sampleProducts = [

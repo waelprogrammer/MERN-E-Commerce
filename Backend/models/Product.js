@@ -17,19 +17,6 @@ const productSchema = new mongoose.Schema(
     active: { type: Boolean, default: true },
     // Featured controls whether the product should appear in the featured section.
     featured: { type: Boolean, default: false },
-  },
-  {
-    // timestamps adds createdAt and updatedAt automatically.
-    timestamps: true,
-    toJSON: {
-      // This changes the MongoDB _id field into a cleaner id field for the frontend.
-      transform: (doc, ret) => {
-        ret.id = String(ret._id);
-        delete ret._id;
-        delete ret.__v;
-        return ret;
-      },
-    },
   }
 );
 

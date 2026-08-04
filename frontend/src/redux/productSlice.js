@@ -2,16 +2,13 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { API_BASE_URL } from '../config/api';
 
-const normalizeArray = (payload) => (Array.isArray(payload) ? payload : []);
-const getAuthHeaders = () => {
-    const token = localStorage.getItem('token');
-    return token ? { Authorization: `Bearer ${token}` } : {};
-};
+// to make sure we get an array not null or undefiend to not crush
+const normalizeArray = (data) => (Array.isArray(data) ? data : []);
 
 export const fetchProducts = createAsyncThunk(
     'products/fetchProducts',
     async () => {
-        const response = await axios.get(`${API_BASE_URL}/api/Products`, { headers: getAuthHeaders() });
+        const response = await axios.get(`${API_BASE_URL}/api/Products`);
         return normalizeArray(response.data);
     }
 );
@@ -19,7 +16,7 @@ export const fetchProducts = createAsyncThunk(
 export const fetchFeaturedProducts = createAsyncThunk(
     'products/fetchFeaturedProducts',
     async () => {
-        const response = await axios.get(`${API_BASE_URL}/api/featured-products`, { headers: getAuthHeaders() });
+        const response = await axios.get(`${API_BASE_URL}/api/featured-products`);
         return normalizeArray(response.data);
     }
 );

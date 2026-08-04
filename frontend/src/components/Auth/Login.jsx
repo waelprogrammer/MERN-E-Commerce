@@ -22,11 +22,13 @@ const Login = () => {
                 `${API_BASE_URL}/login`,
                 { username, password }
             );
-            const userRole = response.data.user?.role || 'user';
-            const userName = response.data.user?.username || username;
 
-            dispatch(login({ token: response.data.token, role: userRole, username: userName }));
-            localStorage.setItem('token', response.data.token);
+            const userRole = response.data.user.role;
+            const userName = response.data.user.username;
+            const Token = response.data.token;
+
+            dispatch(login({ token: Token, role: userRole, username: userName }));
+            localStorage.setItem('token', Token);
             localStorage.setItem('userRole', userRole);
             localStorage.setItem('username', userName);
 
@@ -36,7 +38,7 @@ const Login = () => {
                 navigate('/home');
             }
         } catch (error) {
-          
+
             setError('Invalid username or password');
             console.error('Error logging in', error);
         }
@@ -49,7 +51,7 @@ const Login = () => {
             {error && <p style={{ color: 'red' }}>{error}</p>}
 
             <form onSubmit={handleLogin}>
-               
+
                 <input
                     type="text"
                     placeholder="Username"

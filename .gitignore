@@ -18,3 +18,9 @@ yarn-error.log*
 
 # System files
 .DS_Store
+
+# One-time database seeding script (already run against the database)
+Backend/seed.js
+
+# Claude Code local settings
+.claude
