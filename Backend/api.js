@@ -4,8 +4,10 @@ import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import Product from "./models/Product.js";
 import User from "./models/User.js";
+import { SECRET_KEY } from "./middleware/auth.js";
+import productsRouter from "./routes/products.js";
+import adminRouter from "./routes/admin.js";
 
 // Load environment variables from the .env file.
 dotenv.config();
@@ -19,8 +21,6 @@ app.use(express.json());
 
 // Use port 5000 unless another port is provided in the environment.
 const PORT = process.env.PORT || 5002;
-// Secret key for JWT authentication.
-const SECRET_KEY = process.env.SECRET_KEY;
 // MongoDB connection string.
 const MONGO_URI = process.env.MONGO_URI;
 
@@ -85,74 +85,8 @@ app.post("/login", async (req, res) => {
     res.json({ token, user: { username: user.username, role: user.role } });
 });
 
-// Middleware to protect routes that require login.
-const authenticate = (req, res, next) => {
-    const token = req.headers.authorization?.split(" ")[1];
-
-    if (!token) {
-        return res.status(403).json({ message: "No token provided" });
-    }
-
-    jwt.verify(token, SECRET_KEY, (err, decoded) => {
-        if (err) return res.status(401).json({ message: "Unauthorized" });
-        req.user = decoded;
-        next();
-    });
-};
-
-const authenticateAdmin = (req, res, next) => {
-    authenticate(req, res, () => {
-        if (req.user?.role !== "admin") {
-            return res.status(403).json({ message: "Admin access required" });
-        }
-        next();
-    });
-};
-
-// Get all active products for the frontend.
-app.get("/products", async (req, res) => {
-    const products = await Product.find({ active: true });
-    res.json(products);
-});
-
-// Get featured products for the homepage section.
-app.get("/featured-products", async (req, res) => {
-    const products = await Product.find({ featured: true, active: true }).limit(3);
-    res.json(products);
-});
-
-app.get("/admin/products", authenticateAdmin, async (req, res) => {
-    const products = await Product.find();
-    res.json(products);
-});
-
-app.post("/admin/products", authenticateAdmin, async (req, res) => {
-    const newProduct = await Product.create(req.body);
-    res.json(newProduct);
-});
-
-app.put("/admin/products/:id", authenticateAdmin, async (req, res) => {
-    const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!updated) return res.status(404).json({ message: "Product not found" });
-    res.json(updated);
-});
-
-app.patch("/admin/products/:id/deactivate", authenticateAdmin, async (req, res) => {
-    const updated = await Product.findByIdAndUpdate(req.params.id, { active: false }, { new: true });
-    if (!updated) return res.status(404).json({ message: "Product not found" });
-    res.json(updated);
-});
-
-app.delete("/admin/products/:id", authenticateAdmin, async (req, res) => {
-    const deleted = await Product.findByIdAndDelete(req.params.id);
-    if (!deleted) return res.status(404).json({ message: "Product not found" });
-    res.json({ message: "Product deleted" });
-});
-
-app.get("/admin/users", authenticateAdmin, async (req, res) => {
-    const users = await User.find({}, { password: 0 });
-    res.json(users.map((user) => ({ username: user.username, role: user.role, _id: user._id })));
-});
+app.use(productsRouter);
+app.use(adminRouter);
 
 // Start the server and listen for requests.
 app.listen(PORT, () => {
