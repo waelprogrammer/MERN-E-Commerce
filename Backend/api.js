@@ -109,62 +109,49 @@ const authenticateAdmin = (req, res, next) => {
     });
 };
 
-// Get all active products for the frontend API route.
-app.get("/api/Products", async (req, res) => {
+// Get all active products for the frontend.
+app.get("/products", async (req, res) => {
     const products = await Product.find({ active: true });
     res.json(products);
 });
 
 // Get featured products for the homepage section.
-app.get("/api/featured-products", async (req, res) => {
+app.get("/featured-products", async (req, res) => {
     const products = await Product.find({ featured: true, active: true }).limit(3);
     res.json(products);
 });
 
-// Get one product by its MongoDB id.
-app.get("/api/Products/:id", authenticate, async (req, res) => {
-    const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: "Product not found" });
-    res.json(product);
+app.get("/admin/products", authenticateAdmin, async (req, res) => {
+    const products = await Product.find();
+    res.json(products);
 });
 
-// Create a new product in MongoDB.
-app.post("/Products", authenticateAdmin, async (req, res) => {
+app.post("/admin/products", authenticateAdmin, async (req, res) => {
     const newProduct = await Product.create(req.body);
     res.json(newProduct);
 });
 
-// Update a product by id.
-app.put("/Products/:id", authenticateAdmin, async (req, res) => {
+app.put("/admin/products/:id", authenticateAdmin, async (req, res) => {
     const updated = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updated) return res.status(404).json({ message: "Product not found" });
     res.json(updated);
 });
 
-// Deactivate a product instead of deleting it.
-app.patch("/Products/:id/deactivate", authenticateAdmin, async (req, res) => {
+app.patch("/admin/products/:id/deactivate", authenticateAdmin, async (req, res) => {
     const updated = await Product.findByIdAndUpdate(req.params.id, { active: false }, { new: true });
     if (!updated) return res.status(404).json({ message: "Product not found" });
     res.json(updated);
 });
 
-// Delete a product from MongoDB.
-app.delete("/Products/:id", authenticateAdmin, async (req, res) => {
+app.delete("/admin/products/:id", authenticateAdmin, async (req, res) => {
     const deleted = await Product.findByIdAndDelete(req.params.id);
     if (!deleted) return res.status(404).json({ message: "Product not found" });
     res.json({ message: "Product deleted" });
 });
 
-// Admin route to get all products for management.
-app.get("/api/admin/products", authenticateAdmin, async (req, res) => {
-    const products = await Product.find();
-    res.json(products);
-});
-
-// Admin route to get all registered usernames.
-app.get("/api/admin/users", authenticateAdmin, async (req, res) => {
+app.get("/admin/users", authenticateAdmin, async (req, res) => {
     const users = await User.find({}, { password: 0 });
-    res.json(users.map((user) => ({ username: user.username, role: user.role })));
+    res.json(users.map((user) => ({ username: user.username, role: user.role, _id: user._id })));
 });
 
 // Start the server and listen for requests.

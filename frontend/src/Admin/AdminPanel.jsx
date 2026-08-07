@@ -24,8 +24,8 @@ const AdminPanel = () => {
   const loadData = async () => {
     try {
       const [productsResponse, usersResponse] = await Promise.all([
-        axios.get(`${API_BASE_URL}/api/admin/products`, { headers: getAuthHeaders() }),
-        axios.get(`${API_BASE_URL}/api/admin/users`, { headers: getAuthHeaders() }),
+        axios.get(`${API_BASE_URL}/admin/products`, { headers: getAuthHeaders() }),
+        axios.get(`${API_BASE_URL}/admin/users`, { headers: getAuthHeaders() }),
       ]);
       setProducts(productsResponse.data || []);
       setUsers(usersResponse.data || []);
@@ -65,10 +65,10 @@ const AdminPanel = () => {
 
     try {
       if (editingId) {
-        await axios.put(`${API_BASE_URL}/Products/${editingId}`, payload, { headers: getAuthHeaders() });
+        await axios.put(`${API_BASE_URL}/admin/products/${editingId}`, payload, { headers: getAuthHeaders() });
         setMessage('Product updated successfully');
       } else {
-        await axios.post(`${API_BASE_URL}/Products`, payload, { headers: getAuthHeaders() });
+        await axios.post(`${API_BASE_URL}/admin/products`, payload, { headers: getAuthHeaders() });
         setMessage('Product created successfully');
       }
 
@@ -99,7 +99,7 @@ const AdminPanel = () => {
     }
 
     try {
-      await axios.delete(`${API_BASE_URL}/Products/${productId}`, { headers: getAuthHeaders() });
+      await axios.delete(`${API_BASE_URL}/admin/products/${productId}`, { headers: getAuthHeaders() });
       setMessage('Product deleted');
       await loadData();
     } catch (error) {
@@ -151,7 +151,7 @@ const AdminPanel = () => {
         <h3>All User Names</h3>
         <ul>
           {users.map((user) => (
-            <li key={user.username}>{user.username}</li>
+            <li key={user._id}>{user.username}</li>
           ))}
         </ul>
       </section>

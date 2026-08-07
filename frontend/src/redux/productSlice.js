@@ -8,7 +8,7 @@ const normalizeArray = (data) => (Array.isArray(data) ? data : []);
 export const fetchProducts = createAsyncThunk(
     'products/fetchProducts',
     async () => {
-        const response = await axios.get(`${API_BASE_URL}/api/Products`);
+        const response = await axios.get(`${API_BASE_URL}/products`);
         return normalizeArray(response.data);
     }
 );
@@ -16,7 +16,7 @@ export const fetchProducts = createAsyncThunk(
 export const fetchFeaturedProducts = createAsyncThunk(
     'products/fetchFeaturedProducts',
     async () => {
-        const response = await axios.get(`${API_BASE_URL}/api/featured-products`);
+        const response = await axios.get(`${API_BASE_URL}/featured-products`);
         return normalizeArray(response.data);
     }
 );
