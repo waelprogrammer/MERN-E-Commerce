@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { API_BASE_URL, getAuthHeaders } from '../config/api';
@@ -70,6 +71,24 @@ const AdminPanel = () => {
     await loadData();
   };
 
+  const handleToggleActive = async (product) => {
+    await axios.put(
+      `${API_BASE_URL}/admin/products/${product._id}`,
+      { active: !product.active },
+      { headers: getAuthHeaders() }
+    );
+    await loadData();
+  };
+
+  const handleToggleFeatured = async (product) => {
+    await axios.put(
+      `${API_BASE_URL}/admin/products/${product._id}`,
+      { featured: !product.featured },
+      { headers: getAuthHeaders() }
+    );
+    await loadData();
+  };
+
   return (
     <div>
       <h2>Admin Panel</h2>
@@ -117,12 +136,36 @@ const AdminPanel = () => {
           {products.map((product) => (
             <div key={product._id}>
               <strong>{product.name}</strong> - ${product.price} - Stock: {product.stock}
+
+              <button onClick={() => handleToggleActive(product)}>
+                {product.active ? 'Deactivate' : 'Activate'}
+              </button>
+
+              <button onClick={() => handleToggleFeatured(product)}>
+                {product.featured ? 'Unfeature' : 'Make Featured'}
+              </button>
+
               <button onClick={() => handleEdit(product)}>Edit</button>
               <button onClick={() => handleDelete(product._id)}>Delete</button>
             </div>
           ))}
         </div>
       </section>
+
+      <section>
+        <h3>Featured Products</h3>
+        <div>
+          {products.filter((product) => product.featured).length === 0 && (
+            <p>No featured products yet.</p>
+          )}
+          {products.filter((product) => product.featured).map((product) => (
+            <div key={product._id}>
+              <strong>{product.name}</strong> - ${product.price}
+            </div>
+          ))}
+        </div>
+      </section>
+
 
       <section>
         <h3>All Users</h3>
@@ -137,3 +180,29 @@ const AdminPanel = () => {
 };
 
 export default AdminPanel;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Reference version (commented out) - try building it yourself below first.
+// Start with: fetch products and display the list.
