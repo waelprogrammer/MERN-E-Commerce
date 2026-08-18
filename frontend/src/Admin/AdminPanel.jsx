@@ -135,6 +135,11 @@ const AdminPanel = () => {
         <div>
           {products.map((product) => (
             <div key={product._id}>
+              <img
+                src={product.image}
+                alt={product.name}
+                style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+              />
               <strong>{product.name}</strong> - ${product.price} - Stock: {product.stock}
 
               <button onClick={() => handleToggleActive(product)}>
@@ -160,6 +165,11 @@ const AdminPanel = () => {
           )}
           {products.filter((product) => product.featured).map((product) => (
             <div key={product._id}>
+              <img
+                src={product.image}
+                alt={product.name}
+                style={{ width: '80px', height: '80px', objectFit: 'cover' }}
+              />
               <strong>{product.name}</strong> - ${product.price}
             </div>
           ))}

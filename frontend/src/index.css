@@ -109,3 +109,319 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+/* ===== Home page: masthead + product grids =====
+   Scoped to existing markup/classNames only (no JSX changes):
+   - h1 only exists on Home ("Welcome to Our Store")
+   - h2:has(+ .featured-products / .product-list) targets only those
+     two section headings, not Login/Register/AdminPanel's h2s
+   - .featured-products / .product-list are the two existing grid
+     containers rendered by FeaturedProducts.jsx and ProductList.jsx */
+
+h1 {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 18px;
+}
+
+h1::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+h2:has(+ .featured-products),
+h2:has(+ .product-list) {
+  margin: 56px 0 28px;
+}
+
+h2:has(+ .featured-products)::before,
+h2:has(+ .product-list)::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.featured-products,
+.product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 24px;
+  text-align: left;
+  margin: 0 auto 48px;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
+.featured-products > div,
+.product-list > div {
+  border: 1px solid var(--border) !important;
+  border-radius: 12px;
+  padding: 0 !important;
+  margin-bottom: 0 !important;
+  overflow: hidden;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  @media (prefers-reduced-motion: no-preference) {
+    &:hover {
+      transform: translateY(-4px);
+    }
+  }
+}
+
+.featured-products > div h3,
+.featured-products > div p,
+.product-list > div h3,
+.product-list > div p {
+  margin: 0;
+  padding: 0 16px;
+}
+
+.featured-products > div h3,
+.product-list > div h3 {
+  padding-top: 14px;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.featured-products > div p,
+.product-list > div p {
+  padding-bottom: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.featured-products > div p:last-child,
+.product-list > div p:last-child {
+  padding-bottom: 16px;
+}
+
+.featured-products > div p:last-child strong,
+.product-list > div p:last-child strong {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent);
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-top: 4px;
+}
+
+.product-list > div p:not(:last-child) strong {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+/* ===== Admin page =====
+   Scoped to existing markup only (no JSX changes):
+   - <section>, <h3> and a <textarea> inside the form only exist on
+     AdminPanel, so they're safe as plain element selectors app-wide
+   - h2:has(+ form:has(textarea)) targets only "Admin Panel" heading,
+     not Login/Register's h2 */
+
+h2:has(+ form:has(textarea)) {
+  font-family: var(--heading);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+h2:has(+ form:has(textarea))::before,
+h3::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-right: 9px;
+  vertical-align: middle;
+}
+
+h3 {
+  font-family: var(--heading);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-h);
+  margin: 40px 0 20px;
+}
+
+/* The create/edit product form, as a card */
+form:has(textarea) {
+  display: flex;
+  flex-direction: column;
+  max-width: 440px;
+  margin: 24px auto;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+
+form:has(textarea) input,
+form:has(textarea) textarea {
+  font: inherit;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-h);
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--accent-border);
+    box-shadow: 0 0 0 3px var(--accent-bg);
+  }
+}
+
+form:has(textarea) textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+form:has(textarea) button[type='submit'] {
+  font: inherit;
+  font-weight: 600;
+  padding: 11px 16px;
+  margin-top: 4px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 8px 16px -6px var(--accent-border);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    &:hover {
+      transform: translateY(-1px);
+    }
+  }
+}
+
+/* Product/user sections */
+section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding-inline: 24px;
+  text-align: left;
+}
+
+/* Row list of product cards (only sections with a plain div wrapper
+   have this shape - the Users section uses ul/li instead) */
+section > div {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+section > div > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  box-shadow: var(--shadow);
+  transition: border-color 0.15s ease;
+}
+
+section > div > div:hover {
+  border-color: var(--accent-border);
+}
+
+section > div > div img {
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+section > div > div strong:first-of-type {
+  font-family: var(--heading);
+  font-size: 15px;
+  color: var(--text-h);
+}
+
+section > div > div button {
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--code-bg);
+  color: var(--text-h);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+section > div > div button:first-of-type {
+  margin-left: auto;
+}
+
+section > div > div button:hover {
+  border-color: var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+/* Delete is always the last button in a product row - flag it as destructive */
+section > div > div button:last-of-type {
+  border-color: rgba(220, 38, 38, 0.35);
+  color: #dc2626;
+}
+
+section > div > div button:last-of-type:hover {
+  background: rgba(220, 38, 38, 0.08);
+  border-color: #dc2626;
+}
+
+section > div > p {
+  color: var(--text);
+  font-style: italic;
+  opacity: 0.75;
+}
+
+section ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+section li {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  font-size: 14px;
+}
